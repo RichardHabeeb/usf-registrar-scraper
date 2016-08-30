@@ -2,19 +2,18 @@
 import scrapy
 from scrapy.selector import Selector
 from scrapy.crawler import CrawlerProcess
+from twisted.internet import reactor, defer
 import re
-from flask import Flask
-from multiprocessing import Process
+from scrapy.exceptions import CloseSpider
 
-app = Flask(__name__)
-
-@app.route("/")
-def hello():
-    return "test"
-
-class MySpider(scrapy.Spider):
+class RegistrarSpider(scrapy.Spider):
     name = 'registrar'
     start_urls = ['http://www.registrar.usf.edu/ssearch/search.php']
+
+    def __init__(self, category=None, *args, **kwargs):
+        super(RegistrarSpider, self).__init__(*args, **kwargs)
+        if 'result' in kwargs:
+            self.result = kwargs['result']
 
     def parse(self, response):
         self.form = {}
@@ -61,14 +60,4 @@ class MySpider(scrapy.Spider):
                                    callback=self.full_results)
 
     def full_results(self, response):
-        scraped_data = response.xpath("//table[@id='results']").extract()[0]
-
-
-if __name__ == "__main__":
-    process = CrawlerProcess({
-        'USER_AGENT': 'Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1)'
-    })
-    process.crawl(MySpider)
-    process.start() # the script will block here until the crawling is finished
-    process.stop()
-    app.run()
+        self.result.put(response.xpath("//table[@id='results']").extract()[0])
