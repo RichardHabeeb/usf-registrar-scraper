@@ -1,5 +1,5 @@
 attrs==16.1.0
-autopep8==1.2.2a0
+autopep8==1.2.4
 cffi==1.7.0
 cryptography==1.5
 cssselect==0.9.2
