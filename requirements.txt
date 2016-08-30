@@ -28,7 +28,6 @@ service-identity==16.0.0
 six==1.10.0
 Twisted==16.4.0
 utils==0.9.0
-vboxapi==1.0
 w3lib==1.15.0
 Werkzeug==0.11.4
 zope.interface==4.2.0
