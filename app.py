@@ -3,7 +3,7 @@ from scrapy import signals
 from scrapy.crawler import CrawlerProcess
 from multiprocessing.queues import Queue
 from multiprocessing import Process
-from flask import Flask
+from flask import Flask, url_for
 import os, signal
 
 class CrawlerWorker(Process):
@@ -24,6 +24,8 @@ class CrawlerWorker(Process):
 
 
 app = Flask(__name__)
+
+#app.add_url_rule('/favicon.ico', redirect_to=url_for('static', filename='favicon.ico'))
 
 @app.route("/")
 def index():
