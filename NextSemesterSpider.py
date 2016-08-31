@@ -3,15 +3,14 @@ import scrapy
 from scrapy.selector import Selector
 from scrapy.crawler import CrawlerProcess
 from twisted.internet import reactor, defer
-import re
-from scrapy.exceptions import CloseSpider
+import re, datetime
 
-class RegistrarSpider(scrapy.Spider):
+class NextSemesterSpider(scrapy.Spider):
     name = 'registrar'
     start_urls = ['http://www.registrar.usf.edu/ssearch/search.php']
 
     def __init__(self, category=None, *args, **kwargs):
-        super(RegistrarSpider, self).__init__(*args, **kwargs)
+        super(NextSemesterSpider, self).__init__(*args, **kwargs)
         if 'result' in kwargs:
             self.result = kwargs['result']
 
@@ -35,7 +34,15 @@ class RegistrarSpider(scrapy.Spider):
                                    callback=self.department_selected)
 
     def department_selected(self, response):
-        self.form[response.xpath("//tr[td='TERM']/td/select/@name").extract()[0]] = "201608" # TODO COME BACK AND UPDATE THIS
+        now = datetime.datetime.now()
+        code = ""
+        if now.month >= 8:
+            code = str(now.year + 1) + "01"
+        elif now.month >= 5:
+            code = str(now.year) + "08"
+        else:
+            code = str(now.year) + "05"
+        self.form[response.xpath("//tr[td='TERM']/td/select/@name").extract()[0]] = code # TODO COME BACK AND UPDATE THIS
         yield scrapy.FormRequest("http://www.registrar.usf.edu/ssearch/search.php",
                                    formdata=self.form,
                                    callback=self.term_selected)
