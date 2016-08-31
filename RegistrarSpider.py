@@ -54,10 +54,10 @@ class RegistrarSpider(scrapy.Spider):
 
     def finished_search(self, response):
         num_resp = re.search(r"1 to [0-9]+ of ([0-9]+)", response.xpath("//div[@class='total']/span").extract()[0]).group(1)
-        print "NUM RESPONSES:", num_resp
+        #print "NUM RESPONSES:", num_resp
         yield scrapy.FormRequest("http://www.registrar.usf.edu/ssearch/results.php?P_RESULTS=" + num_resp,
                                    formdata=self.form,
                                    callback=self.full_results)
 
     def full_results(self, response):
-        self.result.put(response.xpath("//table[@id='results']").extract()[0])
+        print response.xpath("//table[@id='results']").extract()[0].encode('utf8')
