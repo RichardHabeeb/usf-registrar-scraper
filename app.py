@@ -28,18 +28,18 @@ def currenttable():
     global current_fetch_time, current_fetch_data
     now = datetime.datetime.now()
     if current_fetch_time is None or (now - current_fetch_time) > datetime.timedelta(seconds=CACHE_SECONDS):
-        current_fetch_data = subprocess.Popen(["scrapy", "runspider", "CurrentSemesterSpider.py", "-s", "LOG_LEVEL=CRITICAL"], stdout=subprocess.PIPE).communicate()[0]
         current_fetch_time = now
+        current_fetch_data = subprocess.Popen(["scrapy", "runspider", "CurrentSemesterSpider.py"], stdout=subprocess.PIPE).communicate()[0]
 
     return current_fetch_data
 
 @app.route("/nexttable")
 def nexttable():
-    global next_fetch_time, current_fetch_data
+    global next_fetch_time, next_fetch_data
     now = datetime.datetime.now()
     if next_fetch_time is None or (now - next_fetch_time) > datetime.timedelta(seconds=CACHE_SECONDS):
-        next_fetch_data = subprocess.Popen(["scrapy", "runspider", "NextSemesterSpider.py", "-s", "LOG_LEVEL=CRITICAL"], stdout=subprocess.PIPE).communicate()[0]
         next_fetch_time = now
+        next_fetch_data = subprocess.Popen(["scrapy", "runspider", "NextSemesterSpider.py"], stdout=subprocess.PIPE).communicate()[0]
 
     return next_fetch_data
 
