@@ -4,7 +4,7 @@ import subprocess, datetime
 app = Flask(__name__, static_url_path='')
 #app.add_url_rule('/favicon.ico', redirect_to=url_for('static', filename='favicon.ico'))
 
-CACHE_SECONDS = 30
+CACHE_SECONDS = 60*30
 
 current_fetch_time = None
 current_fetch_data = ""
