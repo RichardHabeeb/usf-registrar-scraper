@@ -51,7 +51,7 @@ def refresh_cache():
     current_fetch_data = subprocess.Popen(["scrapy", "runspider", "CurrentSemesterSpider.py"], stdout=subprocess.PIPE).communicate()[0]
     threading.Timer(CACHE_SECONDS, refresh_cache).start()
 
+refresh_cache()
 
 if __name__ == "__main__":
-    refresh_cache()
     app.run()
