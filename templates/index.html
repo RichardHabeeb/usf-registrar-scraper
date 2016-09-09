@@ -21,18 +21,19 @@
   <body>
     <div id='container'>
       <h1>USF Tampa Computer Science Graduate Courses</h1>
-      {% if text == "currenttable" %}
+      {% if text == "c" %}
       <strong>Current Semester</strong>
       <a href='next'>Next Semester</a>
       {% endif %}
 
-      {% if text == "nexttable" %}
+      {% if text == "n" %}
       <a href='current'>Current Semester</a>
       <strong>Next Semester</strong>
       {% endif %}
       <div id='results'>
         <img src="img/ring-alt.svg">
       </div>
+      <footer><a target='_blank' href='https://github.com/RichardHabeeb/usf-registrar-scraper'><img src='img/GitHub-Mark-32px.png' /> View on Github</a></footer>
     </div>
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>

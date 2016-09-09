@@ -1,47 +1,32 @@
 from flask import Flask, send_from_directory, render_template
-import subprocess, datetime
+import subprocess, time, threading, signal
+
+signal.signal(signal.SIGINT, signal.SIG_DFL)
 
 app = Flask(__name__, static_url_path='')
 #app.add_url_rule('/favicon.ico', redirect_to=url_for('static', filename='favicon.ico'))
 
 CACHE_SECONDS = 60*30
 
-current_fetch_time = None
 current_fetch_data = ""
-next_fetch_time = None
 next_fetch_data = ""
 
 @app.route("/")
-def index():
-    return render_template('index.html', text='currenttable')
-
 @app.route("/current")
 def current():
-    return render_template('index.html', text='currenttable')
+    return render_template('index.html', text='c')
 
 @app.route("/next")
 def next():
-    return render_template('index.html', text='nexttable')
+    return render_template('index.html', text='n')
 
-@app.route("/currenttable")
+@app.route("/c")
 def currenttable():
-    global current_fetch_time, current_fetch_data
-    now = datetime.datetime.now()
-    if current_fetch_time is None or (now - current_fetch_time) > datetime.timedelta(seconds=CACHE_SECONDS):
-        current_fetch_time = now
-        current_fetch_data = subprocess.Popen(["scrapy", "runspider", "CurrentSemesterSpider.py"], stdout=subprocess.PIPE).communicate()[0]
-
     return current_fetch_data
 
-@app.route("/nexttable")
+@app.route("/n")
 def nexttable():
-    global next_fetch_time, next_fetch_data
-    now = datetime.datetime.now()
-    if next_fetch_time is None or (now - next_fetch_time) > datetime.timedelta(seconds=CACHE_SECONDS):
-        next_fetch_time = now
-        next_fetch_data = subprocess.Popen(["scrapy", "runspider", "NextSemesterSpider.py"], stdout=subprocess.PIPE).communicate()[0]
-
-    return next_fetch_data
+    return next_fetch_data #We cannot send this data with the template because it isn't sanitized for the Jinja2 compiler.
 
 @app.route('/js/<path:path>')
 def send_js(path):
@@ -60,6 +45,13 @@ def send_img(path):
     return send_from_directory('img', path)
 
 
+def refresh_cache():
+    global next_fetch_data, current_fetch_data
+    next_fetch_data = subprocess.Popen(["scrapy", "runspider", "NextSemesterSpider.py"], stdout=subprocess.PIPE).communicate()[0]
+    current_fetch_data = subprocess.Popen(["scrapy", "runspider", "CurrentSemesterSpider.py"], stdout=subprocess.PIPE).communicate()[0]
+    threading.Timer(CACHE_SECONDS, refresh_cache).start()
+
 
 if __name__ == "__main__":
+    refresh_cache()
     app.run()
